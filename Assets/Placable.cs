@@ -2,24 +2,25 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Placable : MonoBehaviour
+[CreateAssetMenu(fileName ="Add/Placable object")]
+public class Placable : ScriptableObject
 {
-    [SerializeField]Vector2Int[] _offsets;
-    private List<Vector2Int>_occupiedCells;
-    public List<Vector2Int>occupiedCells
+    [SerializeField]GameObject _prefab;
+    public List<Vector2Int>occupiedCells = new List<Vector2Int>();
+
+    [SerializeField]bool _canBePlacedOnRoad;
+    public bool canBePlacedOnRoad
     {
         get
         {
-            return _occupiedCells;
+            return _canBePlacedOnRoad;
         }
-        private set{}
+        private set{
+            _canBePlacedOnRoad = value;
+        }
     }
-    public void SetOccupiedSells(List<Vector2Int>occupiedCells)
+    public GameObject Init(Vector3 position)
     {
-        _occupiedCells = occupiedCells;
-    }
-    public Vector2Int[]GetOffets()
-    {
-        return _offsets;
+        return Instantiate(_prefab,position,Quaternion.identity);
     }
 }

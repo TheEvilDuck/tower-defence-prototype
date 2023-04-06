@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -40,31 +41,18 @@ public class Grid
         int y = Mathf.FloorToInt(worldPosition.y/_cellSize);
         return new Vector2Int(x,y);
     }
-    public bool AddPlacableAtPosition(Placable placable,Vector2Int position)
+
+    public bool CheckPlacement(Vector2Int gridPos, Placable placable)
     {
-        if (_grid[position.x,position.y].IsOccupied())
+        if (_grid[gridPos.x,gridPos.y].placable!=null)
             return false;
-        Vector2Int[]offsets = placable.GetOffets();
-        if (offsets!=null)
-        {
-            foreach (Vector2Int offset in offsets)
-            {
-                Vector2Int offsetPosition = position+offset;
-                if (offsetPosition.x<0||offsetPosition.y<0||offsetPosition.x>=_size||offsetPosition.y>=_size)
-                    return false;
-                if (_grid[offsetPosition.x,offsetPosition.y].IsOccupied())
-                    return false;
-            }
-        }
-        _grid[position.x,position.y].TryAddPlacable(placable);
-        if (offsets!=null)
-        {
-            foreach (Vector2Int offset in offsets)
-            {
-                Vector2Int offsetPosition = position+offset;
-                _grid[offsetPosition.x,offsetPosition.y].TryAddPlacable(placable);
-            }
-        }
+        if (_grid[gridPos.x,gridPos.y].hasRoad&&!placable.canBePlacedOnRoad)
+            return false;
         return true;
+    }
+    public void Build(Vector2Int gridPos, Placable placable)
+    {
+        Vector3 position = new Vector3(gridPos.x+_cellSize/2f,gridPos.y+_cellSize/2f,0);
+        _grid[gridPos.x,gridPos.y].placable = placable.Init(position).transform;
     }
 }

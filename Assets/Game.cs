@@ -11,7 +11,7 @@ public class Game : MonoBehaviour
     [SerializeField]Tilemap _roadMap;
     [SerializeField]TileBase _groundTileRule;
     [SerializeField]TileBase _roadTileRule;
-    [SerializeField]Transform _towerPrefab;
+    [SerializeField]Placable _towerPrefab;
 
     private Grid _grid;
 
@@ -38,18 +38,19 @@ public class Game : MonoBehaviour
         for (int x = 0;x<_gridSize;x++)
         {
             int y = _gridSize/2;
+            _grid.GetCellByPosition(new Vector2Int(x,y)).BuildRoad();
             _roadMap.SetTile(new Vector3Int(x,y),_roadTileRule);
         }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     public void OnPlayerClickedAtPosition(Vector2 position)
     {
-       
+        Vector2Int gridPos = _grid.WorldPositionToGridPosition(position);
+        if (_grid.GetCellByPosition(gridPos)==null)
+            return;
+        if (_grid.CheckPlacement(gridPos,_towerPrefab))
+        {
+            _grid.Build(gridPos,_towerPrefab);
+        }
     }
 }

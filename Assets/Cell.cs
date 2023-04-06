@@ -4,25 +4,15 @@ using UnityEngine;
 
 public class Cell
 {
-    private Placable _placable;
+    public Transform placable;
+    public bool hasRoad
+    {
+        get;
+        private set;
+    }
 
-    public Placable placable
+    public void BuildRoad()
     {
-        get
-        {
-            return _placable;
-        }
-        private set{}
-    }
-    public bool TryAddPlacable(Placable placable)
-    {
-        if (IsOccupied())
-            return false;
-        _placable = placable;
-        return true;
-    }
-    public bool IsOccupied()
-    {
-        return _placable!=null;
+        hasRoad = true;
     }
 }
