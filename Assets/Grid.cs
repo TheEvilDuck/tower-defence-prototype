@@ -12,6 +12,8 @@ public class Grid
     public Vector2Int RoadStart{get;private set;}
     public Vector2Int RoadEnd{get;private set;}
 
+    public Action<Cell,Vector2Int>cellChanged;
+
     public Grid(int size,float cellSize)
     {
         _grid = new Cell[size,size];
@@ -70,12 +72,6 @@ public class Grid
     {
         _grid[gridPos.x,gridPos.y].placable = underConstructionTransform;
     }
-
-    public void SetRoadStartAndEnd(Vector2Int start,Vector2Int end)
-    {
-        RoadStart = start;
-        RoadEnd = end;
-    }
     public Vector2 GetBasePosition()
     {
         return RoadEnd+new Vector2(_cellSize*1.5f,_cellSize/2f);
@@ -84,6 +80,89 @@ public class Grid
     {
         if (GetCellByPosition(pos)==null)
             return;
-        _grid[pos.x,pos.y] = new Cell(tileType);
+        Cell newCell = new Cell(tileType);
+        if (newCell == _grid[pos.x,pos.y])
+            return;
+        _grid[pos.x,pos.y] = newCell;
+        cellChanged?.Invoke(_grid[pos.x,pos.y],pos);
+    }
+
+    public void AddRoadToCell(Vector2Int pos)
+    {
+        if (GetCellByPosition(pos)==null)
+            return;
+        if (_grid[pos.x,pos.y].hasRoad)
+            return;
+        _grid[pos.x,pos.y].BuildRoad();
+        UpdateRoadStartAndEnd();
+        cellChanged?.Invoke(_grid[pos.x,pos.y],pos);
+    }
+    public void RemoveRoadAtCell(Vector2Int pos)
+    {
+        if (GetCellByPosition(pos)==null)
+            return;
+        if (!_grid[pos.x,pos.y].hasRoad)
+            return;
+        _grid[pos.x,pos.y].RemoveRoad();
+        UpdateRoadStartAndEnd();
+        cellChanged?.Invoke(_grid[pos.x,pos.y],pos);
+    }
+
+    private Vector2Int defineRoadStart(Cell[,] cells)
+    {
+        Vector2Int roadStart = Vector2Int.zero;
+        for (int x = 0;x<cells.GetLength(0);x++)
+        {
+            for (int y = 0;y<cells.GetLength(1);y++)
+            {
+                if (cells[x,y].hasRoad)
+                {
+                    if (roadStart==Vector2Int.zero)
+                    {
+                        roadStart = new Vector2Int(x,y);
+                        return roadStart;
+                    }
+                }
+            }
+        }
+        return roadStart;
+    }
+    private Vector2Int defineRoadEnd(Cell[,] cells)
+    {
+        Vector2Int[] directions = {Vector2Int.down,Vector2Int.left,Vector2Int.right,Vector2Int.up};
+        List<Vector2Int>visitedCells = new List<Vector2Int>();
+
+        Vector2Int currentPos = RoadStart;
+        while (true)
+        {
+            bool found = false;
+            foreach (Vector2Int direction in directions)
+            {
+                Cell cell = GetCellByPosition(currentPos+direction);
+                if (cell!=null)
+                {
+                    if (cell.hasRoad)
+                    {
+                        if (!visitedCells.Contains(currentPos+direction))
+                        {
+                            visitedCells.Add(currentPos);
+                            currentPos = currentPos+direction;
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+                
+            }
+            if (!found)
+                break;
+        }
+        return currentPos;
+    }
+
+    public void UpdateRoadStartAndEnd()
+    {
+        RoadStart = defineRoadStart(_grid);
+        RoadEnd = defineRoadEnd(_grid);
     }
 }

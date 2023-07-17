@@ -32,7 +32,7 @@ public class GridGenerator
             grid.GetCellByPosition(new Vector2Int(x,yRoad)).BuildRoad();
             _roadMap.SetTile(new Vector3Int(x,yRoad),_roadTileRule);
         }
-        grid.SetRoadStartAndEnd(new Vector2Int(0,yRoad),new Vector2Int(gridSize-1,yRoad));
+        //grid.SetRoadStartAndEnd(new Vector2Int(0,yRoad),new Vector2Int(gridSize-1,yRoad));
         return grid;
     }
 }

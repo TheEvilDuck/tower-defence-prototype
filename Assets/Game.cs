@@ -49,8 +49,14 @@ public class Game : MonoBehaviour
     void Start()
     {
         PlayerStats = new PlayerStats(_startMoney);
-        GridGenerator gridGenerator = new GridGenerator(_tileMap,_roadMap,_groundTileRule,_roadTileRule);
-        _grid = gridGenerator.GenerateGrid(_gridSize,_cellCize);
+
+        TileController tileController = new TileController(_tileMap,_roadMap,_groundTileRule,_roadTileRule);
+        LevelLoader levelLoader = new LevelLoader(_cellCize);
+        _grid = levelLoader.LoadLevel("test");
+        _grid.cellChanged+=tileController.OnCellChanged;
+        tileController.RedrawAll(_grid);
+
+
         _base = Instantiate(_basePrefab,_grid.GetBasePosition(),Quaternion.identity);
         _base.GetComponent<DamagableComponent>().healthChanged+=((int value)=>{
             Debug.Log($"Base took damage, now has {value} health");

@@ -19,6 +19,8 @@ public class LevelEditor : MonoBehaviour
 
     private bool _placeRoad = false;
     private string _fileName = string.Empty;
+    private TileController _tileController;
+    private LevelLoader _levelLoader;
 
     private Grid _grid;
 
@@ -39,6 +41,11 @@ public class LevelEditor : MonoBehaviour
         Transform backGround = Instantiate(_backGroundPrefab).transform;
         backGround.position = new Vector3(_gridSize/2f,_gridSize/2f);
         backGround.localScale = new Vector3(_gridSize,_gridSize);
+
+        _tileController = new TileController(_tileMap,_roadMap,_groundTileRule,_roadTileRule);
+        _grid.cellChanged+=_tileController.OnCellChanged;
+
+        _levelLoader = new LevelLoader(1f);
     }
     private void OnMapNameChanged(string name)
     {
@@ -55,20 +62,17 @@ public class LevelEditor : MonoBehaviour
         if (cell!=null)
         {
             if (_placeRoad)
-           {
-                _roadMap.SetTile(new Vector3Int(cellPos.x,cellPos.y),null);
-                _grid.GetCellByPosition(cellPos).RemoveRoad();
-           }
-           else
-           {
+            {
+                _grid.RemoveRoadAtCell(cellPos);
+            }
+            else
+            {
                 if (cell.hasRoad)
                 {
-                    _roadMap.SetTile(new Vector3Int(cellPos.x,cellPos.y),null);
-                    _grid.GetCellByPosition(cellPos).RemoveRoad();
+                    _grid.RemoveRoadAtCell(cellPos);
                 }
-                _tileMap.SetTile(new Vector3Int(cellPos.x,cellPos.y),null);
                 _grid.ChangeCellType(cellPos,TileEnum.Nothing);
-           }
+            }
         }
     }
     private void FillCell(Vector2Int cellPos)
@@ -80,12 +84,10 @@ public class LevelEditor : MonoBehaviour
            {
                 if (cell.CellType!=TileEnum.Dirt)
                     return;
-                _roadMap.SetTile(new Vector3Int(cellPos.x,cellPos.y),_roadTileRule);
-                _grid.GetCellByPosition(cellPos).BuildRoad();
+                _grid.AddRoadToCell(cellPos);
            }
            else
            {
-                _tileMap.SetTile(new Vector3Int(cellPos.x,cellPos.y),_groundTileRule);
                 _grid.ChangeCellType(cellPos,TileEnum.Dirt);
            }
         }
@@ -142,7 +144,6 @@ public class LevelEditor : MonoBehaviour
             roadIndexes = roadIndexes.ToArray()
         };
         string jsonResult = JsonUtility.ToJson(gridData);
-        Debug.Log(jsonResult);
         string appPath = Application.dataPath+"/LevelEditor/Maps/" + _fileName+".json";
         File.WriteAllText(appPath,jsonResult);
     }
@@ -150,26 +151,10 @@ public class LevelEditor : MonoBehaviour
     {
         if (_fileName==string.Empty)
             return;
-        ClearAll();
-        string appPath = Application.dataPath+"/LevelEditor/Maps/" + _fileName+".json";
-        string Jsonstring = File.ReadAllText(appPath);
-        GridData gridData = JsonUtility.FromJson<GridData>(Jsonstring);
-        _placeRoad = false;
-        for (int x = 0;x<gridData.xSize;x++)
-        {
-            for (int y = 0;y<gridData.ySize;y++)
-            {
-                if ((TileEnum)gridData.grid[(x*_gridSize)+y]!=TileEnum.Nothing)
-                    FillCell(new Vector2Int(x,y));
-            }
-        }
-        _placeRoad = true;
-        foreach(int roadIndex in gridData.roadIndexes)
-        {
-            FillCell(new Vector2Int(roadIndex/gridData.xSize,roadIndex%gridData.ySize));
-        }
-        _placeRoad = false;
-
+        _grid.cellChanged-=_tileController.OnCellChanged;
+        _grid = _levelLoader.LoadLevel(_fileName);
+        _tileController.RedrawAll(_grid);
+        _grid.cellChanged+=_tileController.OnCellChanged;
     }
     private void ClearAll()
     {
