@@ -53,6 +53,8 @@ public class Grid
 
     public bool CheckPlacement(Vector2Int gridPos, Placable placable)
     {
+        if (_grid[gridPos.x,gridPos.y].CellType==TileEnum.Nothing)
+            return false;
         if (_grid[gridPos.x,gridPos.y].placable!=null)
             return false;
         if (_grid[gridPos.x,gridPos.y].hasRoad&&!placable.canBePlacedOnRoad)

@@ -1,5 +1,5 @@
 
-
+[System.Serializable]
 public enum TileEnum
 {
     Nothing = 0,
