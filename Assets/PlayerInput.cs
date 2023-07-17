@@ -1,13 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
+using System;
 
 public class PlayerInput : MonoBehaviour
 {
-    [SerializeField]private MoveEvent _moveEvent;
-    [SerializeField]private MoveEvent _mouseClicked;
     private Vector2 _moveVector;
+
+    public event Action<Vector2>moveEvent;
+    public event Action<Vector2> mouseClickEvent;
+    public event Action <Vector2> mouseRightClickEvent;
+    public event Action<int> switched;
     
     private void Start() 
     {
@@ -20,14 +21,40 @@ public class PlayerInput : MonoBehaviour
         if (_moveVector!=newMoveVector)
         {
             _moveVector = newMoveVector;
-            _moveEvent?.Invoke(_moveVector);
+            moveEvent?.Invoke(_moveVector);
         }
         if (Input.GetMouseButtonDown(0))
         {
-            _mouseClicked?.Invoke(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+            mouseClickEvent?.Invoke(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+        }
+        if (Input.GetMouseButtonDown(1))
+        {
+            mouseRightClickEvent?.Invoke(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            switched?.Invoke(0);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            switched?.Invoke(1);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            switched?.Invoke(2);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha4))
+        {
+            switched?.Invoke(3);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha5))
+        {
+            switched?.Invoke(4);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha6))
+        {
+            switched?.Invoke(5);
         }
         
     }
 }
-[System.Serializable]
-public class MoveEvent:UnityEvent<Vector2>{}

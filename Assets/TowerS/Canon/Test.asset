@@ -12,5 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 667e4e2a4f44cec4bb247cbaee15b9b4, type: 3}
   m_Name: Test
   m_EditorClassIdentifier: 
-  _prefab: {fileID: 0}
+  _prefab: {fileID: 7063245858058722012, guid: 4ae76ede270fa5e4cb01472eaccbdcc5, type: 3}
+  _cost: 50
+  _buildTime: 3
   occupiedCells: []
+  _canBePlacedOnRoad: 0

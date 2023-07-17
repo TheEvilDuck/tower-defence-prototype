@@ -5,9 +5,16 @@ using UnityEngine;
 public class CameraManipulation : MonoBehaviour
 {
     [SerializeField]float _cameraSpeed = 1f;
+    [SerializeField]PlayerInput _playerInput;
     private Vector2 _moveVector;
     private Transform _transform;
 
+    private void OnEnable() {
+        _playerInput.moveEvent+=UpdateMoveVector;
+    }
+    private void OnDisable() {
+        _playerInput.moveEvent-=UpdateMoveVector;
+    }
     private void Start() 
     {
         _transform = transform;
