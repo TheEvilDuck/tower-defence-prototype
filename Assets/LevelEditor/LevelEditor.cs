@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using UnityEngine.Tilemaps;
+using TMPro;
 
 public class LevelEditor : MonoBehaviour
 {
@@ -12,10 +13,12 @@ public class LevelEditor : MonoBehaviour
     [SerializeField]Tilemap _tileMap;
     [SerializeField]Tilemap _roadMap;
     [SerializeField]GameObject _backGroundPrefab;
+    [SerializeField]TMP_InputField _inputField;
     [SerializeField]int _gridSize = 10;
 
 
     private bool _placeRoad = false;
+    private string _fileName = string.Empty;
 
     private Grid _grid;
 
@@ -23,17 +26,23 @@ public class LevelEditor : MonoBehaviour
         _playerInput.mouseClickEvent+=OnMouseClicked;
         _playerInput.mouseRightClickEvent+=OnMouseRightClicked;
         _playerInput.switched+=Switch;
+        _inputField.onEndEdit.AddListener(OnMapNameChanged);
     }
     private void OnDisable() {
         _playerInput.mouseClickEvent-=OnMouseClicked;
         _playerInput.mouseRightClickEvent-=OnMouseRightClicked;
         _playerInput.switched-=Switch;
+        _inputField.onEndEdit.RemoveListener(OnMapNameChanged);
     }
     private void Start() {
         _grid = new Grid(_gridSize,1f);
         Transform backGround = Instantiate(_backGroundPrefab).transform;
         backGround.position = new Vector3(_gridSize/2f,_gridSize/2f);
         backGround.localScale = new Vector3(_gridSize,_gridSize);
+    }
+    private void OnMapNameChanged(string name)
+    {
+        _fileName = name;
     }
     private void OnMouseClicked(Vector2 position)
     {
@@ -110,6 +119,8 @@ public class LevelEditor : MonoBehaviour
 
     private void SaveLevel()
     {
+        if (_fileName==string.Empty)
+            return;
         List<int>roadIndexes = new List<int>();
         Cell[,]grid = _grid.GetGrid();
         int[] cells = new int[grid.GetLength(0)*grid.GetLength(0)];
@@ -132,13 +143,15 @@ public class LevelEditor : MonoBehaviour
         };
         string jsonResult = JsonUtility.ToJson(gridData);
         Debug.Log(jsonResult);
-        string appPath = Application.dataPath + "/Test_map.json";
+        string appPath = Application.dataPath+"/LevelEditor/Maps/" + _fileName+".json";
         File.WriteAllText(appPath,jsonResult);
     }
-    private void LoadLevel()
+    public void LoadLevel()
     {
+        if (_fileName==string.Empty)
+            return;
         ClearAll();
-        string appPath = Application.dataPath + "/Test_map.json";
+        string appPath = Application.dataPath+"/LevelEditor/Maps/" + _fileName+".json";
         string Jsonstring = File.ReadAllText(appPath);
         GridData gridData = JsonUtility.FromJson<GridData>(Jsonstring);
         _placeRoad = false;
