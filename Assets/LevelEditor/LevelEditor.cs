@@ -4,6 +4,7 @@ using UnityEngine;
 using System.IO;
 using UnityEngine.Tilemaps;
 using TMPro;
+using UnityEngine.UI;
 
 public class LevelEditor : MonoBehaviour
 {
@@ -13,8 +14,11 @@ public class LevelEditor : MonoBehaviour
     [SerializeField]Tilemap _tileMap;
     [SerializeField]Tilemap _roadMap;
     [SerializeField]GameObject _backGroundPrefab;
+    [SerializeField]GameObject _wavesMenu;
     [SerializeField]TMP_InputField _inputField;
+    [SerializeField]Button _wavesButton;
     [SerializeField]int _gridSize = 10;
+    [SerializeField] WaveEditor _waveEditor;
 
 
     private bool _placeRoad = false;
@@ -29,12 +33,14 @@ public class LevelEditor : MonoBehaviour
         _playerInput.mouseRightClickEvent+=OnMouseRightClicked;
         _playerInput.switched+=Switch;
         _inputField.onEndEdit.AddListener(OnMapNameChanged);
+        _wavesButton.onClick.AddListener(OnWavesButtonPressed);
     }
     private void OnDisable() {
         _playerInput.mouseClickEvent-=OnMouseClicked;
         _playerInput.mouseRightClickEvent-=OnMouseRightClicked;
         _playerInput.switched-=Switch;
         _inputField.onEndEdit.RemoveListener(OnMapNameChanged);
+        _wavesButton.onClick.RemoveListener(OnWavesButtonPressed);
     }
     private void Start() {
         _grid = new Grid(_gridSize,1f);
@@ -47,12 +53,18 @@ public class LevelEditor : MonoBehaviour
 
         _levelLoader = new LevelLoader(1f);
     }
+    private void OnWavesButtonPressed()
+    {
+        _wavesMenu.SetActive(!_wavesMenu.activeSelf);
+    }
     private void OnMapNameChanged(string name)
     {
         _fileName = name;
     }
     private void OnMouseClicked(Vector2 position)
     {
+        if (_wavesMenu.activeSelf)
+            return;
         Vector2Int cellPos = _grid.WorldPositionToGridPosition(position);
         FillCell(cellPos);
     }
@@ -94,11 +106,15 @@ public class LevelEditor : MonoBehaviour
     }
     private void OnMouseRightClicked(Vector2 position)
     {
+        if (_wavesMenu.activeSelf)
+            return;
         Vector2Int cellPos = _grid.WorldPositionToGridPosition(position);
         DeleteOnCell(cellPos);
     }
     private void Switch(int index)
     {
+        if (_wavesMenu.activeSelf)
+            return;
         switch (index)
         {
            case 0:
@@ -136,14 +152,22 @@ public class LevelEditor : MonoBehaviour
                     roadIndexes.Add(index);
             }
         }
-        GridData gridData = new GridData
+        GridData gridDataToSave = new GridData
         {
             xSize = grid.GetLength(0),
             ySize = grid.GetLength(1),
             grid = cells,
             roadIndexes = roadIndexes.ToArray()
         };
-        string jsonResult = JsonUtility.ToJson(gridData);
+        LevelData levelData = new LevelData
+        {
+            gridData = gridDataToSave,
+            waves = _waveEditor.GetWaveData(),
+            // TO DO CHANGE IN LEVEL EDITOR
+            timeToTheFirstWave = 10f,
+            startMoney = 100,
+        };
+        string jsonResult = JsonUtility.ToJson(levelData);
         string appPath = Application.dataPath+"/LevelEditor/Maps/" + _fileName+".json";
         File.WriteAllText(appPath,jsonResult);
     }
@@ -152,9 +176,11 @@ public class LevelEditor : MonoBehaviour
         if (_fileName==string.Empty)
             return;
         _grid.cellChanged-=_tileController.OnCellChanged;
-        _grid = _levelLoader.LoadLevel(_fileName);
+        LevelData levelData = _levelLoader.LoadLevel(_fileName);
+        _grid = _levelLoader.GridDataToGrid(levelData.gridData);
         _tileController.RedrawAll(_grid);
         _grid.cellChanged+=_tileController.OnCellChanged;
+        _waveEditor.LoadWaveData(levelData.waves);
     }
     private void ClearAll()
     {

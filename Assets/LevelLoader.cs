@@ -20,13 +20,17 @@ public class LevelLoader
             return false;
         return true;
     }
-    public Grid LoadLevel(string fileName)
+    public LevelData LoadLevel(string fileName)
     {
         string appPath = mapsFolder + fileName+".json";
         if (!LevelExists(fileName))
-            return null;
+            return new LevelData();
         string Jsonstring = File.ReadAllText(appPath);
-        GridData gridData = JsonUtility.FromJson<GridData>(Jsonstring);
+        LevelData levelData = JsonUtility.FromJson<LevelData>(Jsonstring);
+        return levelData;
+    }
+    public Grid GridDataToGrid(GridData gridData)
+    {
         Grid grid = new Grid(gridData.xSize, _cellSize);
 
         for (int i = 0;i<gridData.grid.GetLength(0);i++)

@@ -4,15 +4,25 @@ using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
 {
-    [SerializeField]float _firstWaveDelay = 10f;
-    [SerializeField]List<Wave>_waves;
+    [SerializeField]EnemiesPoolSO _enemiesPool;
+    float _firstWaveDelay = 10f;
+    List<Wave>_waves;
     private int _currentWave = -1;
     private Coroutine _currentCoroutine;
 
     public List<Enemy> enemies {get; private set;}
 
-    private void Start() {
+    public void Init(float firstWaveDelay, WaveData[] waves)
+    {
         enemies = new List<Enemy>();
+        _waves = new List<Wave>();
+        _firstWaveDelay = firstWaveDelay;
+        foreach (WaveData waveData in waves)
+        {
+            //TO DO CHANGE HARDCODED VALUES
+            Wave wave = new Wave(true,1f,waveData.timeToTheNextWave,waveData.enemies,_enemiesPool);
+            _waves.Add(wave);
+        }
         _currentCoroutine = StartCoroutine(WaitForTheFirstWave());
         Game.instance.gameOver+=(()=>{
             if (_currentCoroutine!=null)

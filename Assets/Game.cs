@@ -55,7 +55,8 @@ public class Game : MonoBehaviour
         string levelName = PlayerPrefs.GetString("loadedLevelName");
         if (levelName==string.Empty||levelName==null)
             levelName = "test";
-        _grid = levelLoader.LoadLevel(levelName);
+        LevelData levelData = levelLoader.LoadLevel(levelName);
+        _grid = levelLoader.GridDataToGrid(levelData.gridData);
         _grid.cellChanged+=tileController.OnCellChanged;
         tileController.RedrawAll(_grid);
 
@@ -68,6 +69,8 @@ public class Game : MonoBehaviour
             gameOver?.Invoke();
         });
         _uiHandler.SetActive(true);
+        // TO DO REMOVE HARDCODED VALUES
+        _enemiesSpawner.Init(20f,levelData.waves);
     }
     
     
