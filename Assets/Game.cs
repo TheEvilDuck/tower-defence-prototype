@@ -52,7 +52,10 @@ public class Game : MonoBehaviour
 
         TileController tileController = new TileController(_tileMap,_roadMap,_groundTileRule,_roadTileRule);
         LevelLoader levelLoader = new LevelLoader(_cellCize);
-        _grid = levelLoader.LoadLevel("test");
+        string levelName = PlayerPrefs.GetString("loadedLevelName");
+        if (levelName==string.Empty||levelName==null)
+            levelName = "test";
+        _grid = levelLoader.LoadLevel(levelName);
         _grid.cellChanged+=tileController.OnCellChanged;
         tileController.RedrawAll(_grid);
 

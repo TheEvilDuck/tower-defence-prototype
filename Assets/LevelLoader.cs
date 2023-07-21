@@ -10,11 +10,21 @@ public class LevelLoader
     {
         _cellSize = cellSize;
     }
+
+    public bool LevelExists(string levelName)
+    {
+        if (levelName==string.Empty)
+            return false;
+        string appPath = mapsFolder + levelName+".json";
+        if (!File.Exists(appPath))
+            return false;
+        return true;
+    }
     public Grid LoadLevel(string fileName)
     {
-        if (fileName==string.Empty)
-            return null;
         string appPath = mapsFolder + fileName+".json";
+        if (!LevelExists(fileName))
+            return null;
         string Jsonstring = File.ReadAllText(appPath);
         GridData gridData = JsonUtility.FromJson<GridData>(Jsonstring);
         Grid grid = new Grid(gridData.xSize, _cellSize);
