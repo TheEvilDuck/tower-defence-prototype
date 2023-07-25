@@ -29,6 +29,35 @@ public class LevelLoader
         LevelData levelData = JsonUtility.FromJson<LevelData>(Jsonstring);
         return levelData;
     }
+
+    public string[] GetAllLevelNames()
+    {
+        DirectoryInfo directoryInfo = new DirectoryInfo(mapsFolder);
+        FileInfo[] fileInfos = directoryInfo.GetFiles("*.json");
+        List<string>result = new List<string>();
+        foreach (FileInfo fileInfo in fileInfos)
+        {
+            string name = fileInfo.Name;
+            int jsonIndex = name.IndexOf(".json");
+            string resultName = name.Remove(jsonIndex,name.Length-jsonIndex);
+            result.Add(resultName);
+        }
+        return result.ToArray();
+        
+    }
+    public Texture2D LoadLevelImage(string fileName)
+    {
+        string appPath = mapsFolder + fileName+".png";
+        if (!LevelExists(fileName))
+            return null;
+        if (!File.Exists(appPath))
+            return null;
+        byte[] data = File.ReadAllBytes(appPath);
+        Texture2D texture = new Texture2D(2,2);
+        texture.LoadImage(data);
+        return texture;
+        
+    }
     public Grid GridDataToGrid(GridData gridData)
     {
         Grid grid = new Grid(gridData.xSize, _cellSize);

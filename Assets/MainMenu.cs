@@ -15,11 +15,30 @@ public class MainMenu : MonoBehaviour
 
     [SerializeField]Button _playMenuStartButton;
     [SerializeField]Button _playMenuExitButton;
-    [SerializeField]TMP_InputField _inputField;
+    [SerializeField]Transform _iconsParent;
+    [SerializeField]Button _iconPrefab;
     private LevelLoader _levelLoader;
+    private List<Button> _levelIcons;
+    private string _fileName;
 
     private void Awake() {
         _levelLoader = new LevelLoader(1f);
+        _levelIcons = new List<Button>();
+        string[] levelNames = _levelLoader.GetAllLevelNames();
+        foreach (string name in levelNames)
+        {
+            Button levelIcon = Instantiate(_iconPrefab,_iconsParent);
+            levelIcon.onClick.AddListener(()=>{
+                if (_fileName==name)
+                    _fileName = string.Empty;
+                else
+                    _fileName = name;
+            });
+            Texture2D tex = _levelLoader.LoadLevelImage(name);
+            levelIcon.image.sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(tex.width / 2, tex.height / 2));
+            TextMeshProUGUI mapNameText = levelIcon.transform.GetComponentInChildren<TextMeshProUGUI>();
+            mapNameText.text = name;
+        }
     }
     private void OnEnable() 
     {
@@ -29,6 +48,8 @@ public class MainMenu : MonoBehaviour
         
         _playMenuStartButton.onClick.AddListener(StartTheGame);
         _playMenuExitButton.onClick.AddListener(ExitPlayMenu);
+
+        
 
     }
     private void OnDisable() 
@@ -46,10 +67,9 @@ public class MainMenu : MonoBehaviour
     }
     private void StartTheGame()
     {
-        string fileName = _inputField.text;
-        if (_levelLoader.LevelExists(fileName))
+        if (_levelLoader.LevelExists(_fileName))
         {
-            PlayerPrefs.SetString("loadedLevelName",fileName);
+            PlayerPrefs.SetString("loadedLevelName",_fileName);
             SceneManager.LoadScene("Game");
         }
         

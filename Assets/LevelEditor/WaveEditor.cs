@@ -124,6 +124,8 @@ public class WaveEditor : MonoBehaviour
         while (_enemimesParents.Count>0)
             RemoveWave();
         _currentWaveId = 0;
+        if (waveDatas.GetLength(0)==0)
+            return;
         foreach (WaveData waveData in waveDatas)
         {
             AddWave();

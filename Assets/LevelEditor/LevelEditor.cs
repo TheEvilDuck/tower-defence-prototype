@@ -5,6 +5,7 @@ using System.IO;
 using UnityEngine.Tilemaps;
 using TMPro;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class LevelEditor : MonoBehaviour
 {
@@ -17,8 +18,11 @@ public class LevelEditor : MonoBehaviour
     [SerializeField]GameObject _wavesMenu;
     [SerializeField]TMP_InputField _inputField;
     [SerializeField]Button _wavesButton;
+    [SerializeField]Button _exitButton;
     [SerializeField]int _gridSize = 10;
     [SerializeField] WaveEditor _waveEditor;
+    [SerializeField]RenderTexture _renderTexture;
+    [SerializeField]Camera _screenShotCamera;
 
 
     private bool _placeRoad = false;
@@ -34,6 +38,7 @@ public class LevelEditor : MonoBehaviour
         _playerInput.switched+=Switch;
         _inputField.onEndEdit.AddListener(OnMapNameChanged);
         _wavesButton.onClick.AddListener(OnWavesButtonPressed);
+        _exitButton.onClick.AddListener(OnExitButtonPress);
     }
     private void OnDisable() {
         _playerInput.mouseClickEvent-=OnMouseClicked;
@@ -41,12 +46,14 @@ public class LevelEditor : MonoBehaviour
         _playerInput.switched-=Switch;
         _inputField.onEndEdit.RemoveListener(OnMapNameChanged);
         _wavesButton.onClick.RemoveListener(OnWavesButtonPressed);
+        _exitButton.onClick.RemoveListener(OnExitButtonPress);
     }
     private void Start() {
         _grid = new Grid(_gridSize,1f);
         Transform backGround = Instantiate(_backGroundPrefab).transform;
         backGround.position = new Vector3(_gridSize/2f,_gridSize/2f);
         backGround.localScale = new Vector3(_gridSize,_gridSize);
+        _screenShotCamera.transform.position = new Vector3(backGround.position.x,backGround.position.y,Camera.main.transform.position.z);
 
         _tileController = new TileController(_tileMap,_roadMap,_groundTileRule,_roadTileRule);
         _grid.cellChanged+=_tileController.OnCellChanged;
@@ -170,6 +177,20 @@ public class LevelEditor : MonoBehaviour
         string jsonResult = JsonUtility.ToJson(levelData);
         string appPath = Application.dataPath+"/LevelEditor/Maps/" + _fileName+".json";
         File.WriteAllText(appPath,jsonResult);
+        _screenShotCamera.gameObject.SetActive(true);
+        _screenShotCamera.Render();
+
+        RenderTexture.active = _renderTexture;
+        Texture2D resultTexture = new Texture2D(_renderTexture.width,_renderTexture.height,TextureFormat.RGB24,false);
+        resultTexture.ReadPixels(new Rect(0,0,_renderTexture.width,_renderTexture.height),0,0);
+        resultTexture.Apply();
+
+        byte[] bytes = resultTexture.EncodeToPNG();
+        appPath = Application.dataPath+"/LevelEditor/Maps/" + _fileName+".png";
+        File.WriteAllBytes(appPath,bytes);
+        _screenShotCamera.gameObject.SetActive(false);
+
+
     }
     public void LoadLevel()
     {
@@ -192,5 +213,9 @@ public class LevelEditor : MonoBehaviour
                 DeleteOnCell(new Vector2Int(x,y));
             }
         }
+    }
+    private void OnExitButtonPress()
+    {
+        SceneManager.LoadScene("Main menu");
     }
 }
