@@ -13,7 +13,6 @@ public class Game : MonoBehaviour
     [SerializeField]TileBase _roadTileRule;
     [SerializeField] GameObject _uiHandler;
     [SerializeField]EnemySpawner _enemiesSpawner;
-    [SerializeField]int _startMoney = 100;
 
     [SerializeField]Base _basePrefab;
 
@@ -48,7 +47,6 @@ public class Game : MonoBehaviour
     }
     void Start()
     {
-        PlayerStats = new PlayerStats(_startMoney);
 
         TileController tileController = new TileController(_tileMap,_roadMap,_groundTileRule,_roadTileRule);
         LevelLoader levelLoader = new LevelLoader(_cellCize);
@@ -60,6 +58,7 @@ public class Game : MonoBehaviour
         _grid.cellChanged+=tileController.OnCellChanged;
         tileController.RedrawAll(_grid);
 
+        PlayerStats = new PlayerStats(levelData.startMoney);
 
         _base = Instantiate(_basePrefab,_grid.GetBasePosition(),Quaternion.identity);
         _base.GetComponent<DamagableComponent>().healthChanged+=((int value)=>{
@@ -69,8 +68,8 @@ public class Game : MonoBehaviour
             gameOver?.Invoke();
         });
         _uiHandler.SetActive(true);
-        // TO DO REMOVE HARDCODED VALUES
-        _enemiesSpawner.Init(20f,levelData.waves);
+        
+        _enemiesSpawner.Init(levelData.timeToTheFirstWave,levelData.waves);
     }
     
     

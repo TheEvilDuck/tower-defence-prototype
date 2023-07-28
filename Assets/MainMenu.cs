@@ -85,7 +85,7 @@ public class MainMenu : MonoBehaviour
     }
     private void ExitPlayMenu()
     {
-         _mainMenu.SetActive(true);
+        _mainMenu.SetActive(true);
         _playMenu.SetActive(false);
     }
 }

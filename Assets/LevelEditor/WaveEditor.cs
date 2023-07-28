@@ -118,12 +118,18 @@ public class WaveEditor : MonoBehaviour
         EnemyOptions enemyOptions = Instantiate(_enemyOptionsPrefab,parent);
         enemyOptions.LoadValues(enemyData);
     }
-    public void LoadWaveData(WaveData[] waveDatas)
+    public void ClearCurrentWaveData()
     {
         _changeToNewWhenAdd = false;
+        if (_enemimesParents==null)
+            _enemimesParents = new List<GameObject>();
         while (_enemimesParents.Count>0)
             RemoveWave();
         _currentWaveId = 0;
+    }
+    public void LoadWaveData(WaveData[] waveDatas)
+    {
+        ClearCurrentWaveData();
         if (waveDatas.GetLength(0)==0)
             return;
         foreach (WaveData waveData in waveDatas)
@@ -137,6 +143,8 @@ public class WaveEditor : MonoBehaviour
             _currentWaveId++;
         }
         _currentWaveId = 0;
+        if (_enemimesParents.Count==0)
+            return;
         _enemimesParents[_currentWaveId].SetActive(true);
         UpdateWavesCountText();
         if (_enemimesParents.Count>0)
