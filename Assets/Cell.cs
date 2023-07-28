@@ -1,11 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class Cell
 {
     public Transform placable;
     public TileEnum CellType {get;private set;}
+    public event Action placableDestroyed;
     public bool hasRoad
     {
         get;
@@ -28,5 +30,13 @@ public class Cell
     public void RemoveRoad()
     {
         hasRoad = false;
+    }
+    public void DestroyPlacable()
+    {
+        if (placable==null)
+            return;
+        GameObject.Destroy(placable.gameObject);
+        placableDestroyed?.Invoke();
+        
     }
 }

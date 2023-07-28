@@ -9,6 +9,19 @@ public class PlayerStats
     public int  Money{get; private set;}
 
     public int MaxMoney{get;private set;}
+    
+    private float _towerDamageMultiplier = 1f;
+
+    public float TowerDamageMultiplier
+    {
+        get => _towerDamageMultiplier;
+        private set
+        {
+            if (value<=0)
+                return;
+            _towerDamageMultiplier = value;
+        }
+    }
 
     public event Action<int> moneyChanged;
     public event Action<int> maxMoneyChanged;
@@ -39,5 +52,9 @@ public class PlayerStats
         if (Money>MaxMoney)
             AddMoney(-Money+MaxMoney);
         maxMoneyChanged?.Invoke(MaxMoney);
+    }
+    public void ModifyDamageMultiplier(float amount)
+    {
+        TowerDamageMultiplier+=amount;
     }
 }
