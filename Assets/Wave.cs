@@ -30,7 +30,7 @@ public class Wave
             _enemies.Add(pairEnemyCount);
         }
     }
-    public Enemy SpawnNext()
+    public Enemy SpawnNext(DamagableComponent target)
     {
         if (_enemiesLeftToSpawn == null)
             _enemiesLeftToSpawn = new List<PairEnemyCount>(_enemies);
@@ -44,7 +44,7 @@ public class Wave
         if (_enemiesLeftToSpawn[index].count<=0)
             _enemiesLeftToSpawn.Remove(element);
         Enemy enemy = Object.Instantiate(element.enemy);
-        enemy.Init(element.statsMultiplier);
+        enemy.Init(element.statsMultiplier,target);
         return enemy;
     }
     

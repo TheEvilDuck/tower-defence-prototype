@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Grid
@@ -63,14 +64,23 @@ public class Grid
             return false;
         return true;
     }
-    public void Build(Vector2Int gridPos, Placable placable)
+    public void Build(Vector2Int gridPos, PlacableOnGrid placable)
     {
-        Vector3 position = new Vector3(gridPos.x+_cellSize/2f,gridPos.y+_cellSize/2f,0);
-        _grid[gridPos.x,gridPos.y].placable = placable.Init(position).transform;
+        _grid[gridPos.x,gridPos.y].placable = placable;
     }
-    public void AddConstruction(Vector2Int gridPos, Transform underConstructionTransform)
+    public void  AddConstruction(Vector2Int gridPos, UnderConstruction underConstruction)
     {
-        _grid[gridPos.x,gridPos.y].placable = underConstructionTransform;
+        _grid[gridPos.x,gridPos.y].placable = underConstruction;
+    }
+    public bool TryRemovePlacableAt(Vector2Int gridPos, out PlacableOnGrid placableOnGrid)
+    {   
+        placableOnGrid = _grid[gridPos.x,gridPos.y].placable;
+        if (_grid[gridPos.x,gridPos.y].placable!=null)
+        {
+            _grid[gridPos.x,gridPos.y].placable = null;
+            return true;
+        }
+        return false;
     }
     public Vector2 GetBasePosition()
     {

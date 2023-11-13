@@ -4,8 +4,10 @@ using System;
 public class PlayerInput : MonoBehaviour
 {
     private Vector2 _moveVector;
+    private Vector2 _mouseMoveVector;
 
     public event Action<Vector2>moveEvent;
+    public event Action<Vector2>mouseMoveEvent;
     public event Action<Vector2> mouseClickEvent;
     public event Action <Vector2> mouseRightClickEvent;
     public event Action<int> switched;
@@ -22,6 +24,12 @@ public class PlayerInput : MonoBehaviour
         {
             _moveVector = newMoveVector;
             moveEvent?.Invoke(_moveVector);
+        }
+        Vector2 newMouseMoveVector = new Vector2(Input.GetAxis("Mouse X"),Input.GetAxis("Mouse Y"));
+        if (_mouseMoveVector!=newMouseMoveVector)
+        {
+            _mouseMoveVector = newMouseMoveVector;
+            mouseMoveEvent?.Invoke(_mouseMoveVector);
         }
         if (Input.GetMouseButtonDown(0))
         {
@@ -54,6 +62,14 @@ public class PlayerInput : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha6))
         {
             switched?.Invoke(5);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha7))
+        {
+            switched?.Invoke(6);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha8))
+        {
+            switched?.Invoke(7);
         }
         
     }

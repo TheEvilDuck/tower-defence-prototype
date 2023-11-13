@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 667e4e2a4f44cec4bb247cbaee15b9b4, type: 3}
   m_Name: LevelUp
   m_EditorClassIdentifier: 
-  _prefab: {fileID: 7063245858058722012, guid: 42ae2d1da02bddf4da0686cc640c69b4, type: 3}
+  _prefab: {fileID: 1438892939720528931, guid: 42ae2d1da02bddf4da0686cc640c69b4, type: 3}
   _cost: 150
   _buildTime: 10
   occupiedCells: []

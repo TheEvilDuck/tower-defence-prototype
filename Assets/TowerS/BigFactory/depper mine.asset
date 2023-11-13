@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 667e4e2a4f44cec4bb247cbaee15b9b4, type: 3}
   m_Name: depper mine
   m_EditorClassIdentifier: 
-  _prefab: {fileID: 7063245858058722012, guid: 2316ab74f7460e3449a289f83f59cea1, type: 3}
+  _prefab: {fileID: -555076125766785829, guid: 2316ab74f7460e3449a289f83f59cea1, type: 3}
   _cost: 120
   _buildTime: 15
   occupiedCells: []

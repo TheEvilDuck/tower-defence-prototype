@@ -5,7 +5,7 @@ using System;
 
 public class Cell
 {
-    public Transform placable;
+    public PlacableOnGrid placable;
     public TileEnum CellType {get;private set;}
     public event Action placableDestroyed;
     public bool hasRoad
@@ -35,7 +35,6 @@ public class Cell
     {
         if (placable==null)
             return;
-        GameObject.Destroy(placable.gameObject);
         placableDestroyed?.Invoke();
         
     }

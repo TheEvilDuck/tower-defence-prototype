@@ -295,6 +295,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _canon: {fileID: 7162450330707263634}
   _attackDistance: 9
-  _attackRate: 5
-  _damage: 100
+  _attackRate: 7
+  _damage: 50
   _animator: {fileID: 3291763997358052470}

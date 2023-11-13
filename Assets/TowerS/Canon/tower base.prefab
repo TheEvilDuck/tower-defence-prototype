@@ -296,5 +296,5 @@ MonoBehaviour:
   _canon: {fileID: 7162450330707263634}
   _attackDistance: 3
   _attackRate: 1
-  _damage: 10
+  _damage: 7
   _animator: {fileID: 3291763997358052470}

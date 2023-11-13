@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using System.Collections.Generic;
 using System;
+using Unity.VisualScripting;
 
 public class Game : MonoBehaviour
 {
@@ -11,8 +12,10 @@ public class Game : MonoBehaviour
     [SerializeField]Tilemap _roadMap;
     [SerializeField]TileBase _groundTileRule;
     [SerializeField]TileBase _roadTileRule;
-    [SerializeField] GameObject _uiHandler;
+    [SerializeField] UIHandler _uiHandler;
     [SerializeField]EnemySpawner _enemiesSpawner;
+    [SerializeField]Builder _builder;
+    [SerializeField]int _baseMoneyPerTick = 5;
 
     [SerializeField]Base _basePrefab;
 
@@ -22,8 +25,6 @@ public class Game : MonoBehaviour
         return _enemiesSpawner;
     }}
     public Base Base  {get => _base;}
-
-    public static Game instance;
 
     private Grid _grid;
     
@@ -39,12 +40,6 @@ public class Game : MonoBehaviour
     }
     
     public event Action gameOver;
-    private void Awake() {
-        if (instance == null)
-            instance = this;
-        else
-            Destroy(this);
-    }
     void Start()
     {
 
@@ -67,9 +62,13 @@ public class Game : MonoBehaviour
         _base.GetComponent<DamagableComponent>().died+=(()=>{
             gameOver?.Invoke();
         });
-        _uiHandler.SetActive(true);
+        _base.baseTickEvent+= () =>{
+            PlayerStats.AddMoney(_baseMoneyPerTick);
+        };
         
-        _enemiesSpawner.Init(levelData.timeToTheFirstWave,levelData.waves);
+        _builder.Init(this);
+        _enemiesSpawner.Init(levelData.timeToTheFirstWave,levelData.waves,gameOver,_grid,PlayerStats,_base);
+        _uiHandler.Init(this);
     }
     
     

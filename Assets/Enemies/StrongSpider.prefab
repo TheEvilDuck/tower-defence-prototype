@@ -101,7 +101,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _moveSpeed: 0.2
   _moneyForKilling: 10
-  _damage: 10
+  _damage: 20
   _attackDistance: 1.5
   _attackRate: 1
 --- !u!114 &-6471719955481321499
@@ -137,4 +137,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b487890a21dda84fb5f4be933c2c252, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxHealth: 200
+  _maxHealth: 400

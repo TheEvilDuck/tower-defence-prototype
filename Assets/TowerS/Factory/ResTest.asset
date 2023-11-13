@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 667e4e2a4f44cec4bb247cbaee15b9b4, type: 3}
   m_Name: ResTest
   m_EditorClassIdentifier: 
-  _prefab: {fileID: 7063245858058722012, guid: d396e6abaf134284396eabb84dd4e3d4, type: 3}
+  _prefab: {fileID: -555076125766785829, guid: d396e6abaf134284396eabb84dd4e3d4, type: 3}
   _cost: 50
   _buildTime: 2
   occupiedCells: []

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 667e4e2a4f44cec4bb247cbaee15b9b4, type: 3}
   m_Name: Big canon
   m_EditorClassIdentifier: 
-  _prefab: {fileID: 7063245858058722012, guid: 0609ae2e8c691da43a47b2ba54f380f0, type: 3}
+  _prefab: {fileID: -7964542889537882220, guid: 0609ae2e8c691da43a47b2ba54f380f0, type: 3}
   _cost: 100
   _buildTime: 9
   occupiedCells: []

@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 667e4e2a4f44cec4bb247cbaee15b9b4, type: 3}
-  m_Name: SlowTower
+  m_Name: Mingun
   m_EditorClassIdentifier: 
-  _prefab: {fileID: -8196195373236114233, guid: 38d005bae618e1047aa644cb04fa33a7, type: 3}
-  _cost: 75
-  _buildTime: 5
+  _prefab: {fileID: -7964542889537882220, guid: 89dc9cf48453d0743a25d675b6bfed7a, type: 3}
+  _cost: 100
+  _buildTime: 7
   occupiedCells: []
   _canBePlacedOnRoad: 0

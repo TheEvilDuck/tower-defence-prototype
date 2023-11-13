@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class EnemySpawner : MonoBehaviour
 {
@@ -9,14 +10,20 @@ public class EnemySpawner : MonoBehaviour
     List<Wave>_waves;
     private int _currentWave = -1;
     private Coroutine _currentCoroutine;
+    private PlayerStats _playerStats;
+    private Grid _grid;
+    private Base _base;
 
     public List<Enemy> enemies {get; private set;}
 
-    public void Init(float firstWaveDelay, WaveData[] waves)
+    public void Init(float firstWaveDelay, WaveData[] waves,Action gameOverEvent, Grid grid,PlayerStats playerStats,Base baseBuilding)
     {
+        _base = baseBuilding;
         enemies = new List<Enemy>();
         _waves = new List<Wave>();
         _firstWaveDelay = firstWaveDelay;
+        _playerStats = playerStats;
+        _grid = grid;
         foreach (WaveData waveData in waves)
         {
             //TO DO CHANGE HARDCODED VALUES
@@ -24,7 +31,7 @@ public class EnemySpawner : MonoBehaviour
             _waves.Add(wave);
         }
         _currentCoroutine = StartCoroutine(WaitForTheFirstWave());
-        Game.instance.gameOver+=(()=>{
+        gameOverEvent+=(()=>{
             if (_currentCoroutine!=null)
                 StopCoroutine(_currentCoroutine);
         });
@@ -46,17 +53,17 @@ public class EnemySpawner : MonoBehaviour
     {
         while (true)
         {
-            Enemy enemy = _waves[_currentWave].SpawnNext();
+            Enemy enemy = _waves[_currentWave].SpawnNext(_base.GetComponent<DamagableComponent>());
             if (enemy == null)
                 break;
-            enemy.SetGrid(Game.instance.grid);
+            enemy.SetGrid(_grid);
             enemies.Add(enemy);
             DamagableComponent damagableComponent = enemy.GetComponent<DamagableComponent>();
             damagableComponent.died+=(()=>{
                 enemies.Remove(enemy);
                 Destroy(enemy.gameObject);
-                Game.instance.PlayerStats.AddKill();
-                Game.instance.PlayerStats.AddMoney(enemy.MoneyForKilling);
+                _playerStats.AddKill();
+                _playerStats.AddMoney(enemy.MoneyForKilling);
             });
             damagableComponent.healthChanged+=((int health)=>{
                 //Debug.Log(health);

@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-public class Tower : MonoBehaviour
+public class Tower : PlacableOnGrid
 {
     [SerializeField]Transform _canon;
     [SerializeField]float _attackDistance = 2f;
@@ -11,15 +11,27 @@ public class Tower : MonoBehaviour
     protected Enemy _target;
     private float _attackTimer = 0;
     private Transform _transform;
+    private PlayerStats _playerStats;
+    private EnemySpawner _enemySpawner;
+    private bool built = false;
     
     void Start()
     {
         _transform = transform;
     }
 
-    // Update is called once per frame
+    public override void ProvideEnemySpawner(EnemySpawner enemySpawner)
+    {
+        _enemySpawner = enemySpawner;
+    }
+    public override void ProvidePlayerStats(PlayerStats playerStats)
+    {
+        _playerStats = playerStats;
+    }
     void Update()
     {
+        if (!built)
+            return;
         _attackTimer+=Time.deltaTime;
         if (_target!=null)
         {
@@ -34,7 +46,7 @@ public class Tower : MonoBehaviour
 
             
         }
-        foreach (Enemy enemy in Game.instance.EnemySpawner.enemies)
+        foreach (Enemy enemy in _enemySpawner.enemies)
         {
             if ((enemy.transform.position-_transform.position).magnitude<=_attackDistance)
             {
@@ -50,6 +62,17 @@ public class Tower : MonoBehaviour
             return;
         _animator?.Play();
         DamagableComponent damagableComponent = _target.GetComponent<DamagableComponent>();
-        damagableComponent.ChangeHealth(-_damage);
+        float damage = (float)_damage*_playerStats.TowerDamageMultiplier;
+        damagableComponent.ChangeHealth(-(int)damage);
+    }
+
+    public override void OnBuild()
+    {
+        built = true;
+    }
+
+    public override void OnRemove()
+    {
+        
     }
 }

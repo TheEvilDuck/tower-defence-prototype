@@ -17,7 +17,7 @@ public class Enemy : MonoBehaviour
     private Transform _tranfrosm;
     private List<Vector2Int>_visitedCells;
     private float _attackTimer = 0;
-    
+    DamagableComponent _baseHealth; 
 
     
 
@@ -26,10 +26,11 @@ public class Enemy : MonoBehaviour
 
     private readonly Vector2Int[]_directions = {Vector2Int.down,Vector2Int.left,Vector2Int.right,Vector2Int.up};
 
-    public void Init(float statsMultiplier)
+    public void Init(float statsMultiplier, DamagableComponent baseHealth)
     {
         _statsMultiplier = statsMultiplier;
         _tranfrosm = transform;
+        _baseHealth = baseHealth;
         _visitedCells = new List<Vector2Int>();
         _damage = Mathf.RoundToInt((float)_damage*_statsMultiplier);
         DamagableComponent damagableComponent = GetComponent<DamagableComponent>();
@@ -49,7 +50,7 @@ public class Enemy : MonoBehaviour
     }
     private void HandleMovement()
     {
-        Vector2 directionVector = _tranfrosm.position-Game.instance.Base.transform.position;
+        Vector2 directionVector = _tranfrosm.position-_baseHealth.transform.position;
         if (_grid.WorldPositionToGridPosition(_tranfrosm.position)!=_grid.RoadEnd)
         {
             directionVector = _grid.GridPositionToWorldPosition(_cellDestination)-new Vector2(_tranfrosm.position.x,_tranfrosm.position.y);
@@ -86,16 +87,14 @@ public class Enemy : MonoBehaviour
             return;
         }
         _attackTimer=0;
-        if (Game.instance.Base!=null)
-            Game.instance.Base.GetComponent<DamagableComponent>().ChangeHealth(-_damage);
+        if (_baseHealth!=null)
+            _baseHealth.ChangeHealth(-_damage);
     }
     void Update()
     {
         if (_grid==null)
             return;
-        if (Game.instance.Base==null)
-            return;
-        Vector3 vectorToBase = _tranfrosm.position-Game.instance.Base.transform.position;
+        Vector3 vectorToBase = _tranfrosm.position-_baseHealth.transform.position;
         if (vectorToBase.magnitude<=_attackDistance)
             AttackBase();
         else
